@@ -14,7 +14,7 @@ describe('playerSlice', () => {
 
   describe('reducers', () => {
     it('should add card to hand', () => {
-      const initialState = { hand: [], stack: 0 };
+      const initialState = { playerName: 'Player', hand: [], stack: 0 };
       const cardToAdd: Card = { suit: Suit.HEARTS, rank: Rank.ACE };
       const newState = playerReducer(initialState, addCardToHand(cardToAdd));
       expect(newState.hand).toHaveLength(1);
@@ -23,6 +23,7 @@ describe('playerSlice', () => {
 
     it('should clear hand', () => {
       const initialState = {
+        playerName: 'Player',
         hand: [{ suit: Suit.HEARTS, rank: Rank.ACE }],
         stack: 0,
       };
@@ -31,15 +32,24 @@ describe('playerSlice', () => {
     });
 
     it('should add to stack', () => {
-      const initialState = { hand: [], stack: 100 };
+      const initialState = { playerName: 'Player', hand: [], stack: 100 };
       const newState = playerReducer(initialState, addToStack(50));
       expect(newState.stack).toBe(150);
     });
 
     it('should remove from stack', () => {
-      const initialState = { hand: [], stack: 100 };
+      const initialState = { playerName: 'Player', hand: [], stack: 100 };
       const newState = playerReducer(initialState, removeFromStack(30));
       expect(newState.stack).toBe(70);
+    });
+
+    it('should set player name', () => {
+      const initialState = { playerName: 'Player', hand: [], stack: 0 };
+      const newState = playerReducer(initialState, playerSlice.actions.setName('Alice'));
+      expect(newState.playerName).toBe('Alice');
+      // Verify other properties remain unchanged
+      expect(newState.hand).toEqual([]);
+      expect(newState.stack).toBe(0);
     });
   });
 });

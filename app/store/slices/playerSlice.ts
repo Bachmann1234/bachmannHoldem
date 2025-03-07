@@ -1,12 +1,14 @@
 import { Card } from '@/app/types/Card';
 import { createSlice } from '@reduxjs/toolkit';
 
-interface PlayerState {
+export interface PlayerState {
+  playerName: string;
   hand: Card[];
   stack: number;
 }
 
 const initialState: PlayerState = {
+  playerName: 'Player',
   hand: [],
   stack: 0,
 };
@@ -15,6 +17,9 @@ export const playerSlice = createSlice({
   name: 'player',
   initialState,
   reducers: {
+    setName: (state, action: { payload: string }) => {
+      state.playerName = action.payload;
+    },
     addCardToHand: (state, action: { payload: Card }) => {
       state.hand.push(action.payload);
     },
