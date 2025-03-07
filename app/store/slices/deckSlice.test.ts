@@ -1,5 +1,5 @@
 import { deckSlice } from './deckSlice';
-import { Card, Rank, Suit } from './deckSlice';
+import { Card, Rank, Suit } from '../../types/Card';
 
 describe('deckSlice', () => {
     const { shuffle, drawCard, addCard } = deckSlice.actions;
