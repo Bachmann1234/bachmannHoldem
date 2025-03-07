@@ -34,3 +34,6 @@ function generateDeck(): Card[] {
   const ranks: Rank[] = Object.values(Rank).filter((value) => typeof value === 'number') as Rank[];
   return suits.flatMap((suit) => ranks.map((rank) => ({ suit, rank })));
 }
+
+export const { shuffle, drawCard, addCard } = deckSlice.actions;
+export default deckSlice.reducer;
