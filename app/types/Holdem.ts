@@ -1,4 +1,4 @@
-import { PlayerState } from '@/app/store/slices/playerSlice';
+import { Card } from '@/app/types/Card';
 
 export enum GameRound {
   PREFLOP = 'PREFLOP',
@@ -9,7 +9,7 @@ export enum GameRound {
 }
 
 export interface GameAction {
-  player: PlayerState;
+  player: Player;
   type: ActionType;
   amount?: number;
   timestamp: number;
@@ -22,4 +22,17 @@ export enum ActionType {
   BET = 'BET',
   RAISE = 'RAISE',
   ALL_IN = 'ALL_IN',
+}
+
+export interface Pot {
+  amount: number;
+  eligiblePlayers: Player[];
+}
+
+export interface Player {
+  playerId: number;
+  playerName: string;
+  hand: Card[];
+  stack: number;
+  folded: boolean;
 }

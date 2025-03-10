@@ -19,11 +19,11 @@ import tableReducer, {
   tableSlice,
 } from './tableSlice';
 import { Card, Rank, Suit } from '@/app/types/Card';
-import { ActionType, GameAction, GameRound } from '@/app/types/Holdem';
-import { PlayerState } from '@/app/store/slices/playerSlice';
+import { ActionType, GameAction, GameRound, Player } from '@/app/types/Holdem';
 
 describe('tableSlice', () => {
-  const samplePlayer: PlayerState = {
+  const samplePlayer: Player = {
+    playerId: 1,
     playerName: 'Player 1',
     hand: [],
     stack: 1000,

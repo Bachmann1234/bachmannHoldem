@@ -1,22 +1,16 @@
-import { PlayerState } from '@/app/store/slices/playerSlice';
 import { Card } from '@/app/types/Card';
-import { GameAction, GameRound } from '@/app/types/Holdem';
+import { GameAction, GameRound, Player, Pot } from '@/app/types/Holdem';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Pot {
-  amount: number;
-  eligiblePlayers: PlayerState[];
-}
-
 interface TableState {
-  smallBlind: PlayerState | null;
-  bigBlind: PlayerState | null;
-  dealer: PlayerState | null;
-  currentPlayer: PlayerState | null;
+  smallBlind: Player | null;
+  bigBlind: Player | null;
+  dealer: Player | null;
+  currentPlayer: Player | null;
   handNumber: number;
   smallBlindAmount: number;
   bigBlindAmount: number;
-  players: PlayerState[];
+  players: Player[];
   mainPot: Pot;
   sidePots: Pot[];
   board: Card[];
@@ -62,7 +56,7 @@ export const tableSlice = createSlice({
     },
 
     // Player management
-    addPlayer: (state, action: PayloadAction<PlayerState>) => {
+    addPlayer: (state, action: PayloadAction<Player>) => {
       state.players.push(action.payload);
     },
     removePlayer: (state, action: PayloadAction<string>) => {
@@ -70,16 +64,16 @@ export const tableSlice = createSlice({
     },
 
     // Position management
-    setDealer: (state, action: PayloadAction<PlayerState>) => {
+    setDealer: (state, action: PayloadAction<Player>) => {
       state.dealer = action.payload;
     },
-    setSmallBlind: (state, action: PayloadAction<PlayerState>) => {
+    setSmallBlind: (state, action: PayloadAction<Player>) => {
       state.smallBlind = action.payload;
     },
-    setBigBlind: (state, action: PayloadAction<PlayerState>) => {
+    setBigBlind: (state, action: PayloadAction<Player>) => {
       state.bigBlind = action.payload;
     },
-    setCurrentPlayer: (state, action: PayloadAction<PlayerState>) => {
+    setCurrentPlayer: (state, action: PayloadAction<Player>) => {
       state.currentPlayer = action.payload;
     },
 
