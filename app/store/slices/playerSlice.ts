@@ -5,12 +5,14 @@ export interface PlayerState {
   playerName: string;
   hand: Card[];
   stack: number;
+  folded: boolean;
 }
 
 const initialState: PlayerState = {
   playerName: 'Player',
   hand: [],
   stack: 0,
+  folded: false,
 };
 
 export const playerSlice = createSlice({

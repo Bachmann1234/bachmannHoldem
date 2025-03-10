@@ -1,4 +1,6 @@
-enum GameRound {
+import { PlayerState } from '@/app/store/slices/playerSlice';
+
+export enum GameRound {
   PREFLOP = 'PREFLOP',
   FLOP = 'FLOP',
   TURN = 'TURN',
@@ -6,14 +8,14 @@ enum GameRound {
   SHOWDOWN = 'SHOWDOWN',
 }
 
-interface GameAction {
+export interface GameAction {
   player: PlayerState;
   type: ActionType;
   amount?: number;
   timestamp: number;
 }
 
-enum ActionType {
+export enum ActionType {
   FOLD = 'FOLD',
   CHECK = 'CHECK',
   CALL = 'CALL',
