@@ -9,7 +9,7 @@ export enum GameRound {
 }
 
 export interface GameAction {
-  player: Player;
+  player?: Player;
   type: ActionType;
   amount?: number;
   timestamp: number;
@@ -22,17 +22,28 @@ export enum ActionType {
   BET = 'BET',
   RAISE = 'RAISE',
   ALL_IN = 'ALL_IN',
+  NEW_HAND = 'NEW_HAND',
 }
 
 export interface Pot {
   amount: number;
   eligiblePlayers: Player[];
+  createdInRound: GameRound;
 }
 
+export interface BettingRound {
+  currentBet: number;
+  minBet: number;
+  lastRaise: number;
+}
+
+export type PlayerID = number;
 export interface Player {
-  playerId: number;
+  playerId: PlayerID;
   playerName: string;
   hand: Card[];
   stack: number;
-  folded: boolean;
+  isFolded: boolean;
+  isAllIn: boolean;
 }
+export { Card };

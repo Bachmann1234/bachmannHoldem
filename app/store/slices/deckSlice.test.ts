@@ -1,8 +1,8 @@
 import { deckSlice } from './deckSlice';
-import { Card, Rank, Suit } from '../../types/Card';
+import { Rank, Suit } from '../../types/Card';
 
 describe('deckSlice', () => {
-  const { shuffle, drawCard, addCard } = deckSlice.actions;
+  const { resetDeck, drawCard } = deckSlice.actions;
 
   describe('initial state', () => {
     it('should have 52 cards', () => {
@@ -22,7 +22,7 @@ describe('deckSlice', () => {
     it('should shuffle cards', () => {
       const initialState = deckSlice.reducer(undefined, { type: 'unknown' });
       const originalOrder = [...initialState.cardStack];
-      const newState = deckSlice.reducer(initialState, shuffle());
+      const newState = deckSlice.reducer(initialState, resetDeck());
       expect(newState.cardStack).not.toEqual(originalOrder);
       expect(newState.cardStack.length).toBe(52);
     });
@@ -32,14 +32,6 @@ describe('deckSlice', () => {
       const originalLength = initialState.cardStack.length;
       const newState = deckSlice.reducer(initialState, drawCard());
       expect(newState.cardStack.length).toBe(originalLength - 1);
-    });
-
-    it('should add a card', () => {
-      const initialState = { cardStack: [] };
-      const cardToAdd: Card = { suit: Suit.HEARTS, rank: Rank.ACE };
-      const newState = deckSlice.reducer(initialState, addCard(cardToAdd));
-      expect(newState.cardStack).toHaveLength(1);
-      expect(newState.cardStack[0]).toEqual(cardToAdd);
     });
   });
 });

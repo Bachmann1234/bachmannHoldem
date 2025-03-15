@@ -1,5 +1,6 @@
 import tableReducer, {
   addPlayer,
+  addToPlayerStack,
   addToPot,
   advanceRound,
   burnCard,
@@ -7,16 +8,17 @@ import tableReducer, {
   dealToBoard,
   incrementHandNumber,
   logAction,
+  removeFromPlayerStack,
   removePlayer,
   resetBoard,
   setBigBlind,
   setBigBlindAmount,
-  setCurrentBet,
   setCurrentPlayer,
   setDealer,
   setSmallBlind,
   setSmallBlindAmount,
   tableSlice,
+  addToSidePot,
 } from './tableSlice';
 import { Card, Rank, Suit } from '@/app/types/Card';
 import { ActionType, GameAction, GameRound, Player } from '@/app/types/Holdem';
@@ -27,7 +29,8 @@ describe('tableSlice', () => {
     playerName: 'Player 1',
     hand: [],
     stack: 1000,
-    folded: false,
+    isFolded: false,
+    isAllIn: false,
   };
 
   const sampleCard: Card = {
@@ -74,7 +77,7 @@ describe('tableSlice', () => {
         ...tableSlice.getInitialState(),
         players: [samplePlayer],
       };
-      const nextState = tableReducer(initialState, removePlayer(samplePlayer.playerName));
+      const nextState = tableReducer(initialState, removePlayer(samplePlayer.playerId));
       expect(nextState.players).toHaveLength(0);
     });
   });
@@ -123,16 +126,10 @@ describe('tableSlice', () => {
   });
 
   describe('betting reducers', () => {
-    it('should handle setCurrentBet', () => {
-      const initialState = tableSlice.getInitialState();
-      const nextState = tableReducer(initialState, setCurrentBet(50));
-      expect(nextState.currentBet).toBe(50);
-    });
-
     it('should handle addToPot', () => {
       const initialState = {
         ...tableSlice.getInitialState(),
-        mainPot: { amount: 50, eligiblePlayers: [] },
+        mainPot: { amount: 50, eligiblePlayers: [], createdInRound: GameRound.PREFLOP },
       };
       const nextState = tableReducer(initialState, addToPot(50));
       expect(nextState.mainPot.amount).toBe(100);
@@ -140,7 +137,11 @@ describe('tableSlice', () => {
 
     it('should handle createSidePot', () => {
       const initialState = tableSlice.getInitialState();
-      const sidePot = { amount: 200, eligiblePlayers: [samplePlayer] };
+      const sidePot = {
+        amount: 200,
+        eligiblePlayers: [samplePlayer],
+        createdInRound: GameRound.PREFLOP,
+      };
       const nextState = tableReducer(initialState, createSidePot(sidePot));
       expect(nextState.sidePots).toHaveLength(1);
       expect(nextState.sidePots[0]).toEqual(sidePot);
@@ -181,12 +182,14 @@ describe('tableSlice', () => {
         board: [sampleCard],
         burnPile: [sampleCard],
         currentRound: GameRound.RIVER,
-        mainPot: { amount: 500, eligiblePlayers: [] },
-        sidePots: [{ amount: 200, eligiblePlayers: [] }],
-        minBet: 50,
-        lastRaise: 100,
-        currentBet: 200,
+        mainPot: { amount: 500, eligiblePlayers: [], createdInRound: GameRound.PREFLOP },
+        sidePots: [{ amount: 200, eligiblePlayers: [], createdInRound: GameRound.RIVER }],
         bigBlindAmount: 10,
+        bettingRound: {
+          currentBet: 10,
+          minBet: 10,
+          lastRaise: 0,
+        },
       };
       const nextState = tableReducer(initialState, resetBoard());
       expect(nextState.board).toEqual([]);
@@ -194,9 +197,79 @@ describe('tableSlice', () => {
       expect(nextState.currentRound).toBe(GameRound.PREFLOP);
       expect(nextState.mainPot.amount).toBe(0);
       expect(nextState.sidePots).toEqual([]);
-      expect(nextState.minBet).toBe(initialState.bigBlindAmount);
-      expect(nextState.lastRaise).toBe(0);
-      expect(nextState.currentBet).toBe(0);
+      expect(nextState.bettingRound.minBet).toBe(initialState.bigBlindAmount);
+      expect(nextState.bettingRound.lastRaise).toBe(0);
+      expect(nextState.bettingRound.currentBet).toBe(initialState.bigBlindAmount);
     });
+  });
+  it('should handle removeFromPlayerStack', () => {
+    const initialState = {
+      ...tableSlice.getInitialState(),
+      players: [samplePlayer],
+    };
+    const nextState = tableReducer(
+      initialState,
+      removeFromPlayerStack({ player: samplePlayer, amount: 100 }),
+    );
+    expect(nextState.players[0].stack).toBe(900); // 1000 - 100
+  });
+
+  it('should handle addToPlayerStack', () => {
+    const initialState = {
+      ...tableSlice.getInitialState(),
+      players: [samplePlayer],
+    };
+    const nextState = tableReducer(
+      initialState,
+      addToPlayerStack({ player: samplePlayer, amount: 200 }),
+    );
+    expect(nextState.players[0].stack).toBe(1200); // 1000 + 200
+  });
+
+  it('should not modify stack if player is not found', () => {
+    const initialState = {
+      ...tableSlice.getInitialState(),
+      players: [samplePlayer],
+    };
+    const unknownPlayer = { ...samplePlayer, playerId: 999 };
+    const nextState = tableReducer(
+      initialState,
+      removeFromPlayerStack({ player: unknownPlayer, amount: 100 }),
+    );
+    expect(nextState.players[0].stack).toBe(1000); // Unchanged
+  });
+
+  it('should handle addToSidePot', () => {
+    const sidePot = {
+      amount: 200,
+      eligiblePlayers: [samplePlayer],
+      createdInRound: GameRound.PREFLOP,
+    };
+
+    const initialState = {
+      ...tableSlice.getInitialState(),
+      sidePots: [sidePot],
+    };
+
+    const nextState = tableReducer(initialState, addToSidePot({ index: 0, amount: 50 }));
+
+    expect(nextState.sidePots[0].amount).toBe(250); // 200 + 50
+  });
+
+  it('should not modify side pot if index is out of bounds', () => {
+    const sidePot = {
+      amount: 200,
+      eligiblePlayers: [samplePlayer],
+      createdInRound: GameRound.PREFLOP,
+    };
+
+    const initialState = {
+      ...tableSlice.getInitialState(),
+      sidePots: [sidePot],
+    };
+
+    const nextState = tableReducer(initialState, addToSidePot({ index: 1, amount: 50 }));
+
+    expect(nextState.sidePots).toEqual(initialState.sidePots);
   });
 });

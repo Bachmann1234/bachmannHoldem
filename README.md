@@ -1,4 +1,4 @@
-# Bachmann Hold'em 
+# Bachmann Hold'em
 
 This is a repo for a basic texas hold'em poker game. The game is built using React Native and Expo.
 

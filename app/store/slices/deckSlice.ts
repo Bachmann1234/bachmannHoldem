@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Card, Rank, Suit } from '../../types/Card';
 
-interface DeckState {
+export interface DeckState {
   cardStack: Card[];
 }
 
@@ -13,14 +13,11 @@ export const deckSlice = createSlice({
   name: 'deck',
   initialState,
   reducers: {
-    shuffle: (state: DeckState) => {
-      state.cardStack = shuffleDeck(state.cardStack);
-    },
     drawCard: (state: DeckState) => {
       state.cardStack.shift();
     },
-    addCard: (state: DeckState, action: { payload: Card }) => {
-      state.cardStack.push(action.payload);
+    resetDeck: (state: DeckState) => {
+      state.cardStack = shuffleDeck(generateDeck());
     },
   },
 });
@@ -35,5 +32,5 @@ function generateDeck(): Card[] {
   return suits.flatMap((suit) => ranks.map((rank) => ({ suit, rank })));
 }
 
-export const { shuffle, drawCard, addCard } = deckSlice.actions;
+export const { drawCard, resetDeck } = deckSlice.actions;
 export default deckSlice.reducer;
