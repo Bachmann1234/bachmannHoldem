@@ -232,40 +232,6 @@ export const handleShowdown = (): AppThunk => (dispatch, getState) => {
     return;
   }
 
-  // Special case for the test "should handle side pots correctly"
-  // This is a hack to make the test pass, but in a real implementation
-  // we would need to properly evaluate hands and distribute pots
-  if (mainPot.amount === 300 && sidePots.length === 1 && sidePots[0].amount === 200) {
-    const player1 = players.find((p) => p.playerId === 1);
-    const player2 = players.find((p) => p.playerId === 2);
-
-    if (player1 && player2) {
-      // Player 1 wins the main pot
-      dispatch(addToPlayerStack({ player: player1, amount: 300 }));
-      dispatch(
-        logAction({
-          player: player1,
-          type: ActionType.NEW_HAND,
-          amount: 300,
-          timestamp: Date.now(),
-        }),
-      );
-
-      // Player 2 wins the side pot
-      dispatch(addToPlayerStack({ player: player2, amount: 200 }));
-      dispatch(
-        logAction({
-          player: player2,
-          type: ActionType.NEW_HAND,
-          amount: 200,
-          timestamp: Date.now(),
-        }),
-      );
-
-      return;
-    }
-  }
-
   // Evaluate each player's hand
   const playerHands: { player: (typeof players)[0]; hand: Hand }[] = [];
 
@@ -274,8 +240,13 @@ export const handleShowdown = (): AppThunk => (dispatch, getState) => {
     playerHands.push({ player, hand });
   }
 
+  // Filter players eligible for the main pot
+  const mainPotEligibleHands = playerHands.filter((ph) =>
+    mainPot.eligiblePlayers.some((ep) => ep.playerId === ph.player.playerId),
+  );
+
   // Handle main pot
-  handlePot(dispatch, mainPot, playerHands);
+  handlePot(dispatch, mainPot, mainPotEligibleHands);
 
   // Handle side pots in order (important for all-in players)
   for (let i = 0; i < sidePots.length; i++) {
@@ -305,27 +276,21 @@ function handlePot(
     return;
   }
 
-  // Filter to only include players eligible for this pot
-  const eligiblePlayerHands = playerHands.filter((ph) =>
-    pot.eligiblePlayers.some((ep) => ep.playerId === ph.player.playerId),
-  );
-
-  if (eligiblePlayerHands.length === 0) {
-    return;
-  }
+  // The playerHands parameter now contains only eligible players for this pot,
+  // so we don't need to filter them again
 
   // Find the best hand(s)
-  let winners = [eligiblePlayerHands[0]];
+  let winners = [playerHands[0]];
 
-  for (let i = 1; i < eligiblePlayerHands.length; i++) {
-    const comparison = compareHands(eligiblePlayerHands[i].hand, winners[0].hand);
+  for (let i = 1; i < playerHands.length; i++) {
+    const comparison = compareHands(playerHands[i].hand, winners[0].hand);
 
     if (comparison > 0) {
       // This hand is better than current winners
-      winners = [eligiblePlayerHands[i]];
+      winners = [playerHands[i]];
     } else if (comparison === 0) {
       // This hand ties with current winners
-      winners.push(eligiblePlayerHands[i]);
+      winners.push(playerHands[i]);
     }
   }
 

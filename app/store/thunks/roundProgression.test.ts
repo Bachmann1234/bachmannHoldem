@@ -429,10 +429,10 @@ describe('Round Progression', () => {
 
       const board = [
         createCard(Suit.CLUBS, Rank.TWO),
-        createCard(Suit.DIAMONDS, Rank.THREE),
-        createCard(Suit.HEARTS, Rank.FOUR),
-        createCard(Suit.SPADES, Rank.FIVE),
-        createCard(Suit.HEARTS, Rank.SIX),
+        createCard(Suit.DIAMONDS, Rank.FIVE),
+        createCard(Suit.HEARTS, Rank.SEVEN),
+        createCard(Suit.SPADES, Rank.NINE),
+        createCard(Suit.HEARTS, Rank.JACK),
       ];
 
       const initialState = {
@@ -465,13 +465,13 @@ describe('Round Progression', () => {
       const state = store.getState() as RootState;
       const updatedPlayers = state.table.players;
 
-      // Player 1 should win the main pot with a pair of aces
+      // Player 1 should win the main pot with a pair of aces (Ace-Ace-Jack-10-9)
       expect(updatedPlayers[0].stack).toBe(1300);
 
-      // Player 2 should win the side pot with a pair of kings
+      // Player 2 should win the side pot with a pair of kings (King-King-Jack-10-9)
       expect(updatedPlayers[1].stack).toBe(1200);
 
-      // Player 3 should not win anything
+      // Player 3 should not win anything with a pair of queens (Queen-Queen-Jack-10-9)
       expect(updatedPlayers[2].stack).toBe(1000);
     });
   });

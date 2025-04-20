@@ -81,7 +81,9 @@ function getCombinations<T>(array: T[], k: number): T[][] {
  */
 function rankHand(cards: Card[]): Hand {
   // Sort cards by rank (high to low)
-  const sortedCards = [...cards].sort((a, b) => b.rank - a.rank);
+  const sortedCards = [...cards].sort(
+    (a, b) => getComparisonRank(b.rank) - getComparisonRank(a.rank),
+  );
 
   // Check for each hand rank from highest to lowest
   let hand: Hand;
@@ -218,7 +220,7 @@ function checkFourOfAKind(cards: Card[]): Hand | null {
       return {
         rank: HandRank.FOUR_OF_A_KIND,
         cards: [...group, kicker!],
-        value: Number(rank) * 100 + kicker!.rank, // Value based on rank of four of a kind and kicker
+        value: getComparisonRank(Number(rank)) * 100 + getComparisonRank(kicker!.rank), // Value based on rank of four of a kind and kicker
       };
     }
   }
@@ -253,7 +255,7 @@ function checkFullHouse(cards: Card[]): Hand | null {
     return {
       rank: HandRank.FULL_HOUSE,
       cards: [...threeOfAKind, ...pair],
-      value: threeOfAKindRank * 100 + pairRank, // Value based on rank of three of a kind and pair
+      value: getComparisonRank(threeOfAKindRank) * 100 + getComparisonRank(pairRank), // Value based on rank of three of a kind and pair
     };
   }
 
@@ -278,7 +280,9 @@ function checkFlush(cards: Card[]): Hand | null {
   for (const [suit, suitCards] of suits.entries()) {
     if (suitCards.length >= 5) {
       // Take the 5 highest cards of the flush
-      const flushCards = suitCards.sort((a, b) => b.rank - a.rank).slice(0, 5);
+      const flushCards = suitCards
+        .sort((a, b) => getComparisonRank(b.rank) - getComparisonRank(a.rank))
+        .slice(0, 5);
 
       return {
         rank: HandRank.FLUSH,
@@ -367,13 +371,13 @@ function checkThreeOfAKind(cards: Card[]): Hand | null {
       // Find the two highest cards not in the three of a kind
       const kickers = cards
         .filter((card) => card.rank !== rank)
-        .sort((a, b) => b.rank - a.rank)
+        .sort((a, b) => getComparisonRank(b.rank) - getComparisonRank(a.rank))
         .slice(0, 2);
 
       return {
         rank: HandRank.THREE_OF_A_KIND,
         cards: [...group, ...kickers],
-        value: rank * 10000 + calculateHighCardValue(kickers), // Value based on rank of three of a kind and kickers
+        value: getComparisonRank(rank) * 10000 + calculateHighCardValue(kickers), // Value based on rank of three of a kind and kickers
       };
     }
   }
@@ -412,7 +416,10 @@ function checkTwoPair(cards: Card[]): Hand | null {
     return {
       rank: HandRank.TWO_PAIR,
       cards: [...twoPair, kicker],
-      value: pairs[0][0].rank * 10000 + pairs[1][0].rank * 100 + kicker.rank, // Value based on ranks of pairs and kicker
+      value:
+        getComparisonRank(pairs[0][0].rank) * 10000 +
+        getComparisonRank(pairs[1][0].rank) * 100 +
+        getComparisonRank(kicker.rank), // Value based on ranks of pairs and kicker
     };
   }
 
@@ -438,12 +445,20 @@ function checkOnePair(cards: Card[]): Hand | null {
       return {
         rank: HandRank.ONE_PAIR,
         cards: [...group, ...kickers],
-        value: rank * 1000000 + calculateHighCardValue(kickers), // Value based on rank of pair and kickers
+        value: getComparisonRank(rank) * 1000000 + calculateHighCardValue(kickers), // Value based on rank of pair and kickers
       };
     }
   }
 
   return null;
+}
+
+/**
+ * Helper function to get the comparison value of a rank
+ * Treats Ace as the highest rank (14 instead of 1)
+ */
+function getComparisonRank(rank: number): number {
+  return rank === Rank.ACE ? 14 : rank;
 }
 
 /**
@@ -474,7 +489,7 @@ function calculateHighCardValue(cards: Card[]): number {
   const weights = [10000, 100, 10, 1, 0.1];
 
   for (let i = 0; i < Math.min(sortedCards.length, 5); i++) {
-    value += sortedCards[i].rank * weights[i];
+    value += getComparisonRank(sortedCards[i].rank) * weights[i];
   }
 
   return value;
