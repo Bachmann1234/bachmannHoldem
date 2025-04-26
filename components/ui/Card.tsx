@@ -20,7 +20,7 @@ interface Props {
   style?: object;
 }
 
-export const Card: React.FC<Props> = ({ card, style, debug }) => {
+export const Card: React.FC<Props> = ({ card, style }) => {
   const { x, y } = getCardPosition(card.suit, card.rank);
   return (
     <View style={[styles.container, style]}> 
