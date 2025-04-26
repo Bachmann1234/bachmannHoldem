@@ -24,9 +24,10 @@ const rankOptions = [
 interface CardStoryWrapperProps {
   suit: Suit;
   rank: Rank;
+  faceDown: boolean;
 }
-const CardStoryWrapper = ({ suit, rank  }: CardStoryWrapperProps) => (
-  <Card card={{ suit, rank }} />
+const CardStoryWrapper = ({ suit, rank, faceDown }: CardStoryWrapperProps) => (
+  <Card card={{ suit, rank }} faceDown={faceDown} />
 );
 
 const meta = {
@@ -53,6 +54,11 @@ const meta = {
       description: 'Rank',
       defaultValue: Rank.ACE,
     },
+    faceDown: {
+      control: { type: 'boolean' },
+      description: 'Show card face down',
+      defaultValue: false,
+    },
   },
   parameters: {
     controls: { expanded: true },
@@ -63,9 +69,18 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Interactive: Story = {
+export const AceOfHearts: Story = {
   args: {
     suit: Suit.HEARTS,
     rank: Rank.ACE,
+    faceDown: false,
+  },
+};
+
+export const FaceDown: Story = {
+  args: {
+    suit: Suit.HEARTS,
+    rank: Rank.ACE,
+    faceDown: true,
   },
 }; 

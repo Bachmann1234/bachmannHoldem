@@ -18,10 +18,15 @@ function getCardPosition(suit: Suit, rank: Rank) {
 interface Props {
   card: CardType;
   style?: object;
+  faceDown?: boolean;
 }
 
-export const Card: React.FC<Props> = ({ card, style }) => {
-  const { x, y } = getCardPosition(card.suit, card.rank);
+export const Card: React.FC<Props> = ({ card, style, faceDown = false }) => {
+  // If faceDown is true, use the last card in the diamonds row (column 13)
+  const position = faceDown 
+    ? { x: 13 * CARD_WIDTH, y: SUIT_ORDER.indexOf(Suit.DIAMONDS) * CARD_HEIGHT }
+    : getCardPosition(card.suit, card.rank);
+  
   return (
     <View style={[styles.container, style]}> 
       <Image
@@ -30,8 +35,8 @@ export const Card: React.FC<Props> = ({ card, style }) => {
           styles.image,
           {
             transform: [
-              { translateX: -x },
-              { translateY: -y },
+              { translateX: -position.x },
+              { translateY: -position.y },
             ],
           },
         ]}
