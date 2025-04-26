@@ -18,51 +18,10 @@ function getCardPosition(suit: Suit, rank: Rank) {
 interface Props {
   card: CardType;
   style?: object;
-  debug?: boolean;
 }
 
 export const Card: React.FC<Props> = ({ card, style, debug }) => {
   const { x, y } = getCardPosition(card.suit, card.rank);
-  if (debug) {
-    return (
-      <View style={{ position: 'relative' }}>
-        {/* Full tilemap for reference */}
-        <Image
-          source={require('../../assets/cardsLarge_tilemap_packed.png')}
-          style={{ width: CARD_WIDTH * COLUMNS, height: CARD_HEIGHT * SUIT_ORDER.length, opacity: 0.5 }}
-          resizeMode="center"
-        />
-        {/* Cropped card overlay */}
-        <View
-          style={{
-            position: 'absolute',
-            left: x,
-            top: y,
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
-            overflow: 'hidden',
-            borderWidth: 2,
-            borderColor: 'red',
-            backgroundColor: 'rgba(255,255,255,0.7)',
-          }}
-        >
-          <Image
-            source={require('../../assets/cardsLarge_tilemap_packed.png')}
-            style={[
-              {
-                width: CARD_WIDTH * COLUMNS,
-                height: CARD_HEIGHT * SUIT_ORDER.length,
-                position: 'absolute',
-                top: -y,
-                left: -x,
-              },
-            ]}
-            resizeMode="cover"
-          />
-        </View>
-      </View>
-    );
-  }
   return (
     <View style={[styles.container, style]}> 
       <Image

@@ -24,10 +24,9 @@ const rankOptions = [
 interface CardStoryWrapperProps {
   suit: Suit;
   rank: Rank;
-  debug: boolean;
 }
-const CardStoryWrapper = ({ suit, rank, debug }: CardStoryWrapperProps) => (
-  <Card card={{ suit, rank }} debug={debug} />
+const CardStoryWrapper = ({ suit, rank  }: CardStoryWrapperProps) => (
+  <Card card={{ suit, rank }} />
 );
 
 const meta = {
@@ -42,11 +41,6 @@ const meta = {
   ],
   tags: ['autodocs'],
   argTypes: {
-    debug: {
-      control: 'boolean',
-      description: 'Show the full tilemap for debugging alignment',
-      defaultValue: false,
-    },
     suit: {
       control: { type: 'select' },
       options: suitOptions,
@@ -73,6 +67,5 @@ export const Interactive: Story = {
   args: {
     suit: Suit.HEARTS,
     rank: Rank.ACE,
-    debug: false,
   },
 }; 
