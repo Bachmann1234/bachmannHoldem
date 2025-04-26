@@ -1,0 +1,59 @@
+# Cursor Rules for Bachmann Hold'em
+
+# Code Organization
+- Keep game logic in appropriate thunk files (gameFlow.ts, playerActions.ts, roundProgression.ts)
+- Maintain clear separation between UI components and game state management
+- Use TypeScript interfaces and types for all game entities
+
+# Stories
+- Place all user stories in the root-level stories/ directory
+- Follow the ComponentName.stories.tsx naming convention
+- Include stories for all major UI components
+- Document component props and variations in stories
+- Test different states and interactions in stories
+- Use Storybook controls for interactive documentation
+- Keep stories focused on UI components and their variations
+- Include both basic and complex usage examples
+- Document any special props or configurations needed
+
+# Testing
+- Write comprehensive tests for all game logic, especially betting and hand evaluation
+- Include test cases for edge cases like all-in situations and side pots
+- Test both success and failure scenarios for player actions
+
+# State Management
+- Use Redux thunks for all game actions that modify state
+- Keep state updates atomic and predictable
+- Log all significant game actions with timestamps
+
+# Poker Rules
+- Enforce proper betting order (UTG after BB)
+- Validate all betting actions (min raise, proper bet amounts)
+- Handle all-in situations correctly with side pots
+- Maintain proper dealer button and blind positions
+
+# Error Handling
+- Provide clear error messages for invalid actions
+- Handle edge cases gracefully (insufficient funds, invalid bets)
+- Log errors with appropriate context
+
+# Code Style
+- Use consistent naming conventions (camelCase for variables, PascalCase for types)
+- Document complex game logic with clear comments
+- Keep functions focused and single-purpose
+- Use TypeScript enums for game constants (GameRound, ActionType)
+
+# Performance
+- Minimize unnecessary re-renders
+- Optimize hand evaluation algorithms
+- Use efficient data structures for game state
+
+# Security
+- Validate all user inputs
+- Prevent cheating through proper state management
+- Handle disconnections gracefully
+
+# Accessibility
+- Ensure all game actions are keyboard accessible
+- Provide clear visual feedback for game state
+- Support screen readers with appropriate ARIA labels 
